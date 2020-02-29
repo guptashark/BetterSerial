@@ -1,0 +1,3 @@
+* Small loop, user can send something to the port, and it comes back.
+* Separate window for serial output from device and user input.
+* Give the user inputting data their own thread.
