@@ -2,6 +2,20 @@
 #include <stdbool.h>
 #include <windows.h>
 
+int establish_port(HANDLE *h_com_ptr) {
+
+	*h_com_ptr = CreateFile(
+			"COM3",
+			GENERIC_READ | GENERIC_WRITE,
+			0, // exclusive access
+			NULL, // no security attributes
+			OPEN_EXISTING,
+			0,
+			NULL );
+}
+
+
+
 int main(void) {
 
 	printf("Better Serial\n");
@@ -13,16 +27,9 @@ int main(void) {
 	dcb_params.StopBits = ONESTOPBIT;
 	dcb_params.Parity = NOPARITY;
 
-
 	HANDLE hComm;
-	hComm = CreateFile(
-			"COM3",
-			GENERIC_READ | GENERIC_WRITE,
-			0, // exclusive access
-			NULL, // no security attributes
-			OPEN_EXISTING,
-			0,
-			NULL );
+
+	establish_port( & hComm);
 
 	if (hComm == INVALID_HANDLE_VALUE) {
 		printf("Could not open the port.\n");
