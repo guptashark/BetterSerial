@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdbool.h>
 #include <windows.h>
 
 int main(void) {
@@ -36,18 +37,39 @@ int main(void) {
 	DWORD nBytes;
 	LPDWORD p_nBytes = &nBytes;
 
-	ReadFile(
+	char serial_buffer[64] = "hello\n";
+
+	DWORD bytes_written;
+
+	// later, right now, just use "hello\n"
+	// scanf("%s", serial_buffer);
+
+	bool status = WriteFile(hComm,
+		serial_buffer,
+		strlen(serial_buffer),
+		&bytes_written,
+		NULL );
+
+	if ( ! status ) {
+		printf("Something wrong happened...\n");
+	}
+
+	printf("bytes written: %d\n", bytes_written);
+
+	bool read_status = ReadFile(
 		hComm,
 		buff,
-		7,
+		18,
 		p_nBytes,
 		NULL );
 
+	if ( ! read_status) {
+		printf("bad read\n");
+	}
 
-		printf("reading serial: %s\n", buff);
+	printf("reading serial: %s\n", buff);
 
-		CloseHandle(hComm);
-		return 0;
+	CloseHandle(hComm);
 
 
 	return 0;
