@@ -35,19 +35,35 @@ int read_loop(HANDLE *h_com_ptr) {
 	DWORD event_mask;
 
 	while(true) {
-		WaitCommEvent(*h_com_ptr, & event_mask, NULL);
 
-		bool read_status = ReadFile(
-			*h_com_ptr,
-			& val,
-			1,
-			p_nBytes,
-			NULL );
+		bool wce_res;
 
-		if ( ! read_status) {
-			printf("bad read\n");
+		wce_res = WaitCommEvent(*h_com_ptr, & event_mask, NULL );
+
+		if ( wce_res != 0 ) {
+			do {
+
+				bool read_status;
+
+				read_status = ReadFile(
+					*h_com_ptr,
+					& val,
+					1,
+					p_nBytes,
+					NULL
+				);
+
+				if ( read_status ) {
+					putchar(val);
+				} else {
+					printf("ERROR READING\n");
+					break;
+				}
+			} while ( p_nBytes > 0);
+
 		} else {
-			putchar(val);
+			printf("WaitCommEvent error!\n");
+			break;
 		}
 	}
 }
