@@ -84,7 +84,7 @@ int main(void) {
 		printf("bad read\n");
 	}
 
-	buff[32] = '\0';
+	buff[18] = '\0';
 
 	printf("reading serial: %s\n", buff);
 
