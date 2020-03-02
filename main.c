@@ -26,6 +26,32 @@ int config_port(DCB * dcb_params_ptr) {
 	return 0;
 }
 
+int read_loop(HANDLE *h_com_ptr) {
+
+	DWORD nBytes;
+	LPDWORD p_nBytes = &nBytes;
+
+	char val;
+	DWORD event_mask;
+
+	while(true) {
+		WaitCommEvent(*h_com_ptr, & event_mask, NULL);
+
+		bool read_status = ReadFile(
+			*h_com_ptr,
+			& val,
+			1,
+			p_nBytes,
+			NULL );
+
+		if ( ! read_status) {
+			printf("bad read\n");
+		} else {
+			putchar(val);
+		}
+	}
+}
+
 
 int main(void) {
 
@@ -51,8 +77,6 @@ int main(void) {
 	printf("Opened the port.\n");
 
 	char buff[64];
-	DWORD nBytes;
-	LPDWORD p_nBytes = &nBytes;
 
 	char serial_buffer[64] = "hello\n";
 
@@ -73,23 +97,12 @@ int main(void) {
 
 	printf("bytes written: %d\n", bytes_written);
 
-	bool read_status = ReadFile(
-		hComm,
-		buff,
-		18,
-		p_nBytes,
-		NULL );
+	// check the return status
+	SetCommMask(hComm, EV_RXCHAR);
 
-	if ( ! read_status) {
-		printf("bad read\n");
-	}
-
-	buff[18] = '\0';
-
-	printf("reading serial: %s\n", buff);
+	read_loop( & hComm);
 
 	CloseHandle(hComm);
-
 
 	return 0;
 }
